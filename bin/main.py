@@ -1,3 +1,11 @@
+"""
+Name : image_process.py.py
+Author : OBR01
+contact : oussama.brich@gmail.com
+Time    : 20/11/2020 23:45
+Desc:
+"""
+
 import cv2 as cv
 import numpy as np
 from bin.classes.image_process import ImageProcess

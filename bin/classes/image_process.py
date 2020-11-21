@@ -1,10 +1,11 @@
 """
 Name : image_process.py.py
 Author : OBR01
-Contect : oussama.brich@edissyum.com
+contact : oussama.brich@gmail.com
 Time    : 20/11/2020 23:45
 Desc:
 """
+
 import cv2
 import numpy as np
 import imutils
