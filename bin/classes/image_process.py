@@ -46,7 +46,16 @@ class ImageProcess:
         cv2.imshow('mask', mask)
 
         edges = cv2.Canny(mask, 100, 200)
-        plt.subplot(122), plt.imshow(edges, cmap='gray')
+
+        # Remove black background
+        tmp = cv2.cvtColor(edges, cv2.COLOR_BGR2GRAY)
+        _, alpha = cv2.threshold(tmp, 0, 255, cv2.THRESH_BINARY)
+        b, g, r = cv2.split(edges)
+        rgba = [b, g, r, alpha]
+        edges_no_background = cv2.merge(rgba, 4)
+
+        plt.subplot(122), plt.imshow(frame, cmap='gray'), plt.imshow(edges, cmap='gray')
+
         plt.show()
 
         plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
