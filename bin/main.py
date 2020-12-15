@@ -6,38 +6,23 @@ Time    : 20/11/2020 23:45
 Desc:
 """
 
-import cv2 as cv
-import numpy as np
 from bin.classes.image_process import ImageProcess
 
-IMAGE_PATH = '/home/obr01/Documents/CERI/M2_S3/Traitement-Document/Projet/data/images/covid19.jpg'
-
-
-def show_image(path):
-    image = cv.imread(path)
-    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-    ret, thresh = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
-
-    # noise removal
-    kernel = np.ones((3, 3), np.uint8)
-    opening = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel, iterations=2)
-    # sure background area
-    sure_bg = cv.dilate(opening, kernel, iterations=3)
-
-    # Finding sure foreground area
-    dist_transform = cv.distanceTransform(opening, cv.DIST_L2, 5)
-    ret, sure_fg = cv.threshold(dist_transform, 0.7 * dist_transform.max(), 255, 0)
-
-    # Finding unknown region
-    sure_fg = np.uint8(sure_fg)
-    unknown = cv.subtract(sure_bg, sure_fg)
-
-    cv.namedWindow('image', cv.WINDOW_NORMAL)
-    cv.imshow('image', image)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-
+IMAGE_OUTPUT_PATH = '../data/result/'
 
 if __name__ == '__main__':
-    # show_image(IMAGE_PATH)
-    ImageProcess.image_edge(IMAGE_PATH)
+    IMAGE_PATH = input("Entrez le chemin de l'image rayon X : ")
+
+    result_path = ImageProcess.image_edge(IMAGE_PATH, IMAGE_OUTPUT_PATH)
+    output_path = ImageProcess.convert_black_to_transparent(IMAGE_PATH, IMAGE_OUTPUT_PATH)
+    lungs_info = ImageProcess.get_lung_contours(result_path, IMAGE_OUTPUT_PATH)
+    lungs_info = ImageProcess.add_lung_damage(lungs_info)
+    for lung_info in lungs_info:
+        ImageProcess.add_damage_percent(lung_info)
+        print("----------------------------------------------")
+        print("Chemin d'image : " + lung_info['image_path'])
+        print("Coté de poumon : " + lung_info['side'])
+        print("Surface : " + str(lung_info['area']))
+        print("Centre de poumon : (" + str(lung_info['x_center']) + "," + str(lung_info['y_center']) + ")")
+        print("Dommage : " + str(lung_info['damage_percent']))
+        print("----------------------------------------------")
